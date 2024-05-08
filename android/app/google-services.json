@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163205407097",
+    "project_id": "mytube-61779",
+    "storage_bucket": "mytube-61779.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163205407097:android:96a04c3596d484f8510fa8",
+        "android_client_info": {
+          "package_name": "com.example.mytube"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB70PmavUzyEdu9QRmDMKuIcjC0eawb8tg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
