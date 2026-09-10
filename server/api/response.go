@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -18,12 +18,12 @@ const (
 	RES_BAD_GATEWAY  ResponseCode = 502
 )
 
-func (r *Response) success(stausCode ResponseCode, data any) {
+func (r *Response) Success(stausCode ResponseCode, data any) {
 
 	payload, err := json.Marshal(data)
 
 	if err != nil {
-		r.error(RES_SERVER_ERROR, "Cannot parse payload")
+		r.Error(RES_SERVER_ERROR, "Cannot parse payload")
 		return
 	}
 
@@ -33,7 +33,7 @@ func (r *Response) success(stausCode ResponseCode, data any) {
 
 }
 
-func (r *Response) error(statusCode ResponseCode, err string) {
+func (r *Response) Error(statusCode ResponseCode, err string) {
 	r.w.WriteHeader(int(statusCode))
 	r.w.Write([]byte(err))
 }
