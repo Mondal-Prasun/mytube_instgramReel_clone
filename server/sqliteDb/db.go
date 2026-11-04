@@ -14,7 +14,7 @@ type SqliteDb struct {
 type User struct {
 	UserId       string `json:"UserId"`
 	Username     string `json:"Username"`
-	UserEmail    string `json:"Useremail"`
+	UserEmail    string `json:"UserEmail"`
 	UserPassword string `json:"UserPassword"`
 }
 

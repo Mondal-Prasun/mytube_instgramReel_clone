@@ -58,7 +58,7 @@ func (a *Api) AddUser(w http.ResponseWriter, r *http.Request) {
 	var user sqlitedb.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		res.Error(RES_ERROR, "Invalid json")
+		res.Error(RES_ERROR, "Invalid json" + err.Error())
 		return
 	}
 

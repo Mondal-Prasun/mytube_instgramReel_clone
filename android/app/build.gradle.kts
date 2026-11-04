@@ -36,6 +36,9 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    dependencies{
+        implementation("androidx.activity:activity-ktx:1.13.0")
+    }
 }
 
 kotlin {
