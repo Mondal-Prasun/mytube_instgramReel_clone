@@ -12,15 +12,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Reel_c',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: MultiBlocProvider(
-        providers: [
-          BlocProvider<ApiCubit>(create: (_) => ApiCubit()),
-          BlocProvider<UserApiCubit>(create: (_) => UserApiCubit()),
-        ],
-        child: LoginClass(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ApiCubit>(create: (_) => ApiCubit()),
+        BlocProvider<UserApiCubit>(create: (_) => UserApiCubit()),
+      ],
+      child: MaterialApp(
+        title: 'Reel_c',
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        home: LoginClass(),
       ),
     );
   }

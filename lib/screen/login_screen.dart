@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reel_c/provider/methodChannel.dart';
 import 'package:reel_c/provider/server.dart';
 import 'package:reel_c/screen/uploadVideo.dart';
 import 'package:reel_c/widget/customTextField.dart';
@@ -84,7 +85,7 @@ class _LoginClassState extends State<LoginClass> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => BlocProvider(
-                                create: (_) => UserApiCubit(),
+                                create: (_) => VideoMethodCubit(),
                                 child: UploadVideoScreen(),
                               ),
                             ),
