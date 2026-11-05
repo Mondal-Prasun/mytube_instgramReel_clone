@@ -4,6 +4,7 @@ package com.example.reel_c
 import android.os.Build
 
 import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,6 +13,11 @@ import androidx.annotation.RequiresApi
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import java.nio.file.Files
+import java.util.UUID
+import kotlin.io.path.writeBytes
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MainActivity : FlutterFragmentActivity(){
 
@@ -21,6 +27,7 @@ class MainActivity : FlutterFragmentActivity(){
     private var pendingResult : MethodChannel.Result? = null
 
 
+    @OptIn(ExperimentalUuidApi::class)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -29,9 +36,15 @@ class MainActivity : FlutterFragmentActivity(){
             if(uri != null){
                 Log.d("Uri", "here is uri $uri")
                 try{
+                    val mimeType = contentResolver.getType( uri)
+                    val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+
                 contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val res = inputStream.readAllBytes()
-                    pendingResult?.success(res)
+                    val vidUuid =  Uuid.generateV7().toString()
+                    val tempVidFile =  Files.createTempFile(vidUuid, ".$extension")
+
+                    tempVidFile.writeBytes(inputStream.readAllBytes())
+                    pendingResult?.success(tempVidFile.toAbsolutePath().toString())
                 }}catch (e : Exception){
                     pendingResult?.error(e.toString(), null, null)
                 }
@@ -53,5 +66,6 @@ class MainActivity : FlutterFragmentActivity(){
         pendingResult = result
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
     }
+
 
 }
