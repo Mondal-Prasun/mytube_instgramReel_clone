@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:http/http.dart" as http;
 
@@ -20,8 +21,8 @@ class UserApiState {
   ServerState state = ServerState.none;
 }
 
-class VideoApiState {
-  VideoApiState();
+class Video {
+  Video();
 
   String videoName = "";
   String videoDes = "";
@@ -80,6 +81,44 @@ class UserApiCubit extends Cubit<UserApiState?> {
     } catch (e) {
       emit(UserApiState()..state = ServerState.error);
       debugPrint("cannot signup ${e.toString()}");
+    }
+  }
+}
+
+class UploadVideoCubit extends Cubit<ServerState> {
+  UploadVideoCubit() : super(ServerState.none);
+
+  Future<void> uploadVideo({
+    required String serverToken,
+    required Video video,
+  }) async {
+    emit(ServerState.loading);
+    final String fullToken = "Bearer $serverToken";
+
+    final request = http.MultipartRequest(
+      "POST",
+      Uri.parse("$_localHost/secure/uploadVideo"),
+    );
+
+    request.headers.addAll({"Authorization": fullToken});
+
+    request.fields["VideoName"] = video.videoName;
+    request.fields["VideoDes"] = video.videoDes;
+
+    request.files.add(
+      await http.MultipartFile.fromPath("VideoFile", video.videoFilePath),
+    );
+
+    try {
+      final streamedResponse = await request.send();
+
+      final response = await http.Response.fromStream(streamedResponse);
+
+      emit(ServerState.done);
+      debugPrint(response.body);
+    } catch (e) {
+      debugPrint(e.toString());
+      emit(ServerState.error);
     }
   }
 }

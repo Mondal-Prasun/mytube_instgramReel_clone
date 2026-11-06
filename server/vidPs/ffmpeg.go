@@ -19,9 +19,22 @@ func HLSsegmentGenerate(outputFolder string, uploadedPath string) error {
 
 	outPutM3U8FilePath := fmt.Sprintf("%v/output.m3u8", outputFolder)
 
+	// cmd := exec.Command(
+	// 	"ffmpeg", "-i", uploadedPath,
+	// 	"-vf", "crop=ih*(9/16):ih,scale=1080:1920",
+	// 	"-c:v", "libx264", "-crf", "20", "-preset", "ultrafast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0",
+	// 	"-c:a", "aac", "-b:a", "128k",
+	// 	"-f", "hls",
+	// 	"-hls_time", "4",
+	// 	"-hls_playlist_type", "vod",
+	// 	"-hls_segment_filename", segmentFilePath,
+	// 	outPutM3U8FilePath,
+	// )
+	//
+
 	cmd := exec.Command(
 		"ffmpeg", "-i", uploadedPath,
-		"-vf", "crop=ih*(9/16):ih,scale=1080:1920",
+		"-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2",
 		"-c:v", "libx264", "-crf", "20", "-preset", "ultrafast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0",
 		"-c:a", "aac", "-b:a", "128k",
 		"-f", "hls",
@@ -30,7 +43,6 @@ func HLSsegmentGenerate(outputFolder string, uploadedPath string) error {
 		"-hls_segment_filename", segmentFilePath,
 		outPutM3U8FilePath,
 	)
-
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 

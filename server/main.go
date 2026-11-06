@@ -43,6 +43,7 @@ func main() {
 	serverMux.HandleFunc("/signUp", api.AddUser)
 
 	serverMux.Handle("/secure/uploadVideo", api.JWTMiddleware(http.HandlerFunc(api.UploadVideo)))
+	serverMux.Handle("/secure/getVideos", api.JWTMiddleware(http.HandlerFunc(api.GetVideos)))
 	serverMux.Handle("/hls/", api.CorsMiddleware(api.JWTMiddleware(http.StripPrefix("/hls/", http.HandlerFunc(api.StreamHLSVideo)))))
 
 	log.Println("Server running at : " + sPort)

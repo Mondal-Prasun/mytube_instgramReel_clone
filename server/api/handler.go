@@ -58,7 +58,7 @@ func (a *Api) AddUser(w http.ResponseWriter, r *http.Request) {
 	var user sqlitedb.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		res.Error(RES_ERROR, "Invalid json" + err.Error())
+		res.Error(RES_ERROR, "Invalid json"+err.Error())
 		return
 	}
 
@@ -226,6 +226,28 @@ func (a *Api) CorsMiddleware(next http.Handler) http.HandlerFunc {
 
 		next.ServeHTTP(w, r)
 	}
+}
+
+func (a *Api) GetVideos(w http.ResponseWriter, r *http.Request) {
+
+	res := Response{
+		w: w,
+	}
+
+	if r.Method != http.MethodGet {
+		res.Error(RES_BAD_GATEWAY, "No such method")
+		return
+	}
+
+	vids, err := a.SqliteDb.GetShortVideos()
+
+	if err != nil {
+		res.Error(RES_SERVER_ERROR, "Cannot get videos from db "+err.Error())
+		return
+	}
+
+	res.Success(RES_OK, vids)
+
 }
 
 func (a *Api) StreamHLSVideo(w http.ResponseWriter, r *http.Request) {

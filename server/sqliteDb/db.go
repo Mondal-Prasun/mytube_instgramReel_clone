@@ -47,6 +47,8 @@ const (
 
 	insertVideo string = `INSERT INTO Videos (id, userId, VidName, VidDes, videoUrl)
 VALUES (?, ?, ?, ?, ?);`
+
+	getVideos string = `SELECT * FROM Videos ORDER BY createdAt DESC;`
 )
 
 func InitSqliteDb() (*SqliteDb, error) {
@@ -58,7 +60,7 @@ func InitSqliteDb() (*SqliteDb, error) {
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, err
+ 		return nil, err
 	}
 
 	if err = createTables(db); err != nil {
@@ -106,5 +108,38 @@ func (db *SqliteDb) InsertVideoHLS(vidDet *VideoHLS) error {
 	}
 
 	return nil
+
+}
+
+func (db *SqliteDb) GetShortVideos() (*[]VideoHLS, error) {
+	rowRes, err := db.dbPtr.Query(getVideos)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rowRes.Close()
+
+	var id, userId, VidName, VidDes, videoUrl, createdAt string
+
+	videos := []VideoHLS{}
+
+	for rowRes.Next() {
+		err := rowRes.Scan(&id, &userId, &VidName, &VidDes, &videoUrl, &createdAt)
+		if err != nil {
+			return nil, err
+		}
+
+		videos = append(videos, VideoHLS{
+			UserId:         userId,
+			VidId:          id,
+			VidName:        VidName,
+			VidDes:         VidDes,
+			VidDestination: videoUrl,
+		})
+
+	}
+
+	return &videos, nil
 
 }

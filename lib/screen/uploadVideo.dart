@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reel_c/provider/methodChannel.dart';
@@ -19,6 +16,10 @@ class UploadVideoScreen extends StatefulWidget {
 class _UploadVideoScreenState extends State<UploadVideoScreen> {
   late VideoPlayerController _videoPlayerController;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Video video = Video();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +29,10 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
           if (state == null) {
             return Text("State is null");
           }
+
+          debugPrint("First servertoken is : ${state.serverToken}");
           return Form(
+            key: _formKey,
             child: Center(
               child: SingleChildScrollView(
                 child: Column(
@@ -43,7 +47,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                         }
                         return null;
                       },
-                      onSave: (value) {},
+                      onSave: (value) {
+                        video.videoName = value!;
+                      },
                     ),
 
                     CustomTextFromField(
@@ -54,7 +60,9 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                         }
                         return null;
                       },
-                      onSave: (value) {},
+                      onSave: (value) {
+                        video.videoDes = value!;
+                      },
                     ),
                     BlocBuilder<VideoMethodCubit, String>(
                       builder: (BuildContext ctx, String vidTempPath) {
@@ -90,6 +98,8 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                                   _videoPlayerController.play();
                                 });
 
+                          video.videoFilePath = vidTempPath;
+
                           return Container(
                             height: 300,
                             width: 300,
@@ -108,6 +118,35 @@ class _UploadVideoScreenState extends State<UploadVideoScreen> {
                           );
                         }
                       },
+                    ),
+                    BlocProvider(
+                      create: (_) => UploadVideoCubit(),
+                      child: BlocBuilder<UploadVideoCubit, ServerState>(
+                        builder: (BuildContext ctx, ServerState serverState) {
+                          debugPrint("token is : ${state.serverToken}");
+                          if (serverState == ServerState.done) {
+                            return Center(
+                              child: Text(
+                                "Done",
+                                style: TextStyle(color: Colors.green),
+                              ),
+                            );
+                          }
+                          return OutlinedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+
+                                await ctx.read<UploadVideoCubit>().uploadVideo(
+                                  serverToken: state.serverToken!,
+                                  video: video,
+                                );
+                              }
+                            },
+                            child: Text("Upload"),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

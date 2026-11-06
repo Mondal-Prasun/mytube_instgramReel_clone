@@ -37,6 +37,7 @@ func (a *Api) workOnJob(job *VidJob) {
 		return
 	}
 
+	log.Println("Adding video in sqlite db")
 	if err := a.SqliteDb.InsertVideoHLS(&sqlitedb.VideoHLS{
 		VidId:          job.JobId,
 		UserId:         job.UserId,
@@ -45,6 +46,8 @@ func (a *Api) workOnJob(job *VidJob) {
 		VidDestination: outputFolder,
 	}); err != nil {
 
+		log.Println("Error adding in sqlite db " + err.Error())
+
 		job.ResultChan <- Result{
 			Success: false,
 			Error:   err,
@@ -52,6 +55,7 @@ func (a *Api) workOnJob(job *VidJob) {
 		return
 	}
 
+	log.Println("Added in sqlite db")
 	job.ResultChan <- Result{
 		Success: true,
 		Error:   nil,
